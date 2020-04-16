@@ -12,19 +12,9 @@ set -o pipefail  # don't hide errors within pipes
 ## Bash color ##########################################
 # Set colors
 RED='\033[0;31m'
-GREEN='\033[00;32m'
 YELLOW='\033[00;33m'
-BLUE='\033[00;34m'
-PURPLE='\033[00;35m'
-CYAN='\033[00;36m'
-LIGHTGRAY='\033[00;37m'
 LRED='\033[01;31m'
-LGREEN='\033[01;32m'
-LYELLOW='\033[01;33m'
 LBLUE='\033[01;34m'
-LPURPLE='\033[01;35m'
-LCYAN='\033[01;36m'
-WHITE='\033[01;37m'
 NC='\033[0m' # No Color
 
 ## Logs ################################################
@@ -37,6 +27,11 @@ fatal()   { echo -e "${RED}[FATAL] $* ${NC}"   | logger --tag "${SCRIPTNAME}" --
 
 ## Define Misskey's folder ##########################
 FOLDER="/your/path/"
+MISSKEYSERVICE="misskey.service"
+MISSKEYUSER="misskey"
+
+info "Stopping Misskey"
+systemctl stop ${MISSKEYSERVICE}
 
 # Go to ${FOLDER}
 cd ${FOLDER}
@@ -45,18 +40,21 @@ cd ${FOLDER}
 info "Download"
 ## Uncomment if you have trouble with git/yarn.lock
 # git reset --hard
-git checkout master
-git pull
+su - ${MISSKEYUSER} -s /bin/bash -c "git checkout master"
+su - ${MISSKEYUSER} -s /bin/bash -c "git pull"
 
 # Build
 info "Install and update dependencies"
-yarn install
+su - ${MISSKEYUSER} -s /bin/bash -c "yarn install"
 
 info "Build assets"
-NODE_ENV=production yarn build
+su - ${MISSKEYUSER} -s /bin/bash -c "NODE_ENV=production yarn build"
 
 info "Migrate"
-yarn migrate
+su - ${MISSKEYUSER} -s /bin/bash -c "yarn migrate"
+
+info "Starting Misskey"
+systemctl start ${MISSKEYSERVICE}
 
 ## END Script #####################################
 info "exiting ${SCRIPTNAME}"
