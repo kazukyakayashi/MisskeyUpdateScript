@@ -1,6 +1,7 @@
 #!/bin/bash
 ## author      : Dryusdan
-## date        : 30/09/2019
+## modified    : KazukyAkayashi
+## date        : 16/04/2020
 ## description : Misskey Update
 
 ## Bash strict mode ####################################
@@ -35,14 +36,15 @@ fatal()   { echo -e "${RED}[FATAL] $* ${NC}"   | logger --tag "${SCRIPTNAME}" --
 ########################################################
 
 ## Define Misskey's folder ##########################
-FOLDER="/home/misskey/misskey"
+FOLDER="/your/path/"
 
 # Go to ${FOLDER}
 cd ${FOLDER}
  
 # Download
 info "Download"
-git reset --hard
+## Uncomment if you have trouble with git/yarn.lock
+# git reset --hard
 git checkout master
 git pull
 
