@@ -42,6 +42,7 @@ info "Download"
 # git reset --hard
 su - ${MISSKEYUSER} -s /bin/bash -c "git checkout master"
 su - ${MISSKEYUSER} -s /bin/bash -c "git pull"
+su - ${MISSKEYUSER} -s /bin/bash -c "git submodule update --init"
 
 # Build
 info "Install and update dependencies"
