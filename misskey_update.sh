@@ -25,7 +25,7 @@ error()   { echo -e "${LRED}[ERROR] $* ${NC}"   | logger --tag "${SCRIPTNAME}" -
 fatal()   { echo -e "${RED}[FATAL] $* ${NC}"   | logger --tag "${SCRIPTNAME}" --stderr ; exit 1 ; }
 ########################################################
 
-## Define Misskey's folder ##########################
+## Define Misskey's config ##########################
 FOLDER="/your/path/"
 MISSKEYSERVICE="misskey.service"
 MISSKEYUSER="misskey"
@@ -38,21 +38,21 @@ cd ${FOLDER}
  
 # Download
 info "Download"
-## Uncomment if you have trouble with git/yarn.lock
-# git reset --hard
+## Uncomment if you have trouble with git
+# su - ${MISSKEYUSER} -s /bin/bash -c "git reset --hard"
 su - ${MISSKEYUSER} -s /bin/bash -c "git checkout master"
 su - ${MISSKEYUSER} -s /bin/bash -c "git pull"
 su - ${MISSKEYUSER} -s /bin/bash -c "git submodule update --init"
 
 # Build
 info "Install and update dependencies"
-su - ${MISSKEYUSER} -s /bin/bash -c "yarn install"
+su - ${MISSKEYUSER} -s /bin/bash -c "NODE_OPTIONS=--max_old_space_size=3072 NODE_ENV=production pnpm install --frozen-lockfile;"
 
 info "Build assets"
-su - ${MISSKEYUSER} -s /bin/bash -c "NODE_ENV=production yarn build"
+su - ${MISSKEYUSER} -s /bin/bash -c "NODE_OPTIONS=--max_old_space_size=3072 NODE_ENV=production pnpm build;"
 
 info "Migrate"
-su - ${MISSKEYUSER} -s /bin/bash -c "yarn migrate"
+su - ${MISSKEYUSER} -s /bin/bash -c "NODE_OPTIONS=--max_old_space_size=3072 NODE_ENV=production pnpm run migrate;"
 
 info "Starting Misskey"
 systemctl start ${MISSKEYSERVICE}
